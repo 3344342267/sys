@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>创作大师 - 智能小说写作平台</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2c1810;
+            --primary-light: #4a3428;
+            --secondary: #8b5a2b;
+            --accent: #c9a86c;
+            --accent-light: #e8d5b0;
+            --bg-dark: #1a1410;
+            --bg-medium: #2a2018;
+            --bg-light: #3d3028;
+            --text-primary: #f5efe6;
+            --text-secondary: #b8a898;
+            --text-muted: #7a6a5a;
+            --border: #4a3a2a;
+            --success: #6b8e4e;
+            --warning: #d4a84b;
+            --danger: #a85454;
+            --shadow: rgba(0, 0, 0, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Serif SC', serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, var(--bg-medium) 0%, var(--bg-dark) 100%);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            background: radial-gradient(ellipse at top, rgba(201, 168, 108, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--secondary) 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 24px;
+            color: var(--bg-dark);
+        }
+
+        .app-title {
+            font-family: 'ZCOOL XiaoWei', serif;
+            font-size: 20px;
+            color: var(--accent);
+            letter-spacing: 2px;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 16px 12px;
+            overflow-y: auto;
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-section-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            padding: 0 8px;
+            margin-bottom: 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-secondary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--accent);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-light);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, var(--bg-light) 0%, transparent 100%);
+            color: var(--accent);
+        }
+
+        .nav-item.active::before {
+            transform: scaleY(1);
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--danger);
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+
+        .sidebar-footer {
+            padding: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-light);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .user-info:hover {
+            background: var(--bg-medium);
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--secondary) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .user-status {
+            font-size: 11px;
+            color: var(--success);
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .top-bar {
+            height: 60px;
+            background: var(--bg-medium);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+        }
+
+        .top-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .book-title {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 24px;
+            color: var(--accent);
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .breadcrumb span {
+            color: var(--text-secondary);
+        }
+
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .top-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .top-btn:hover {
+            background: var(--bg-light);
+            color: var(--text-primary);
+            border-color: var(--accent);
+        }
+
+        .top-btn.primary {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--secondary) 100%);
+            color: var(--bg-dark);
+            border: none;
+            font-weight: 600;
+        }
+
+        .top-btn.primary:hover {
+            filter: brightness(1.1);
+        }
+
+        .editor-area {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .chapter-list {
+            width: 240px;
+            background: var(--bg-medium);
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .chapter-list-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .chapter-list-title {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .chapter-list-add {
+            width: 28px;
+            height: 28px;
+            border: 1px dashed var(--border);
+            border-radius: 6px;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .chapter-list-add:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .chapter-item {
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .chapter-item:hover {
+            background: var(--bg-light);
+        }
+
+        .chapter-item.active {
+            background: linear-gradient(90deg, var(--bg-light) 0%, transparent 100%);
+            border-left: 3px solid var(--accent);
+            padding-left: 9px;
+        }
+
+        .chapter-number {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .chapter-name {
+            font-size: 14px;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .chapter-wordcount {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .writing-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-dark);
+        }
+
+        .writing-header {
+            padding: 16px 32px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .writing-title-input {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 28px;
+            background: transparent;
+            border: none;
+            color: var(--accent);
+            width: 100%;
+            max-width: 500px;
+            outline: none;
+        }
+
+        .writing-title-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .writing-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: var(--bg-light);
+            color: var(--text-primary);
+            border-color: var(--accent);
+        }
+
+        .writing-content {
+            flex: 1;
+            padding: 32px;
+            overflow-y: auto;
+        }
+
+        .writing-textarea {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 16px;
+            line-height: 1.8;
+            resize: none;
+            outline: none;
+            font-family: 'Noto Serif SC', serif;
+        }
+
+        .writing-textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .ai-assistant-panel {
+            width: 300px;
+            background: var(--bg-medium);
+            border-left: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ai-panel-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .ai-panel-title {
+            font-size: 14px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ai-panel-content {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .ai-tool-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .ai-tool-btn {
+            padding: 16px;
+            background: var(--bg-light);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .ai-tool-btn:hover {
+            background: var(--bg-dark);
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .ai-tool-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .ai-tool-name {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .ai-suggestions {
+            margin-bottom: 24px;
+        }
+
+        .suggestions-title {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .suggestion-card {
+            padding: 12px;
+            background: var(--bg-light);
+            border-radius: 6px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .suggestion-card:hover {
+            background: var(--bg-dark);
+            border-left-color: var(--accent);
+        }
+
+        .suggestion-label {
+            font-size: 11px;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+
+        .suggestion-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .word-count-panel {
+            padding: 16px;
+            background: var(--bg-light);
+            border-radius: 8px;
+        }
+
+        .word-count-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .word-count-title {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .word-count-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .word-count-bar {
+            height: 6px;
+            background: var(--bg-dark);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .word-count-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent) 0%, var(--secondary) 100%);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--bg-medium);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow: hidden;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 60px var(--shadow);
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-title {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 24px;
+            color: var(--accent);
+        }
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: var(--bg-light);
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 24px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .changelog-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .changelog-item {
+            display: flex;
+            gap: 16px;
+        }
+
+        .changelog-version {
+            width: 80px;
+            padding: 6px 12px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--secondary) 100%);
+            color: var(--bg-dark);
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .changelog-content {
+            flex: 1;
+        }
+
+        .changelog-date {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .changelog-updates {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .changelog-update {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .changelog-update::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+        }
+
+        .changelog-update.new::before {
+            content: '✨';
+            left: -2px;
+        }
+
+        .changelog-update.fix::before {
+            content: '🔧';
+            left: -2px;
+        }
+
+        .changelog-update.opt::before {
+            content: '⚡';
+            left: -2px;
+        }
+
+        .changelog-update.change::before {
+            content: '📝';
+            left: -2px;
+        }
+
+        .bookshelf-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .book-card {
+            background: var(--bg-light);
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border);
+        }
+
+        .book-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px var(--shadow);
+            border-color: var(--accent);
+        }
+
+        .book-cover {
+            height: 140px;
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 32px;
+            color: var(--accent-light);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .book-cover::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M0 0h20v20H0V0zm20 20h20v20H20V20z'/%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .book-info {
+            padding: 12px;
+        }
+
+        .book-name {
+            font-size: 14px;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .book-meta {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .settings-section {
+            margin-bottom: 32px;
+        }
+
+        .settings-title {
+            font-size: 16px;
+            color: var(--accent);
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .settings-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .settings-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .toggle-switch {
+            width: 48px;
+            height: 26px;
+            background: var(--bg-dark);
+            border-radius: 13px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background: var(--accent);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch.active::after {
+            left: 24px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .outline-panel {
+            padding: 24px;
+        }
+
+        .outline-section {
+            margin-bottom: 24px;
+        }
+
+        .outline-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .outline-title {
+            font-size: 16px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .outline-content {
+            background: var(--bg-light);
+            border-radius: 8px;
+            padding: 16px;
+            min-height: 100px;
+        }
+
+        .outline-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .outline-item:last-child {
+            border-bottom: none;
+        }
+
+        .outline-number {
+            width: 24px;
+            height: 24px;
+            background: var(--accent);
+            color: var(--bg-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .outline-text {
+            flex: 1;
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        @media (max-width: 1200px) {
+            .ai-assistant-panel {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 60px;
+            }
+            .sidebar-header, .nav-section-title, .nav-item span, .user-details {
+                display: none;
+            }
+            .sidebar-header {
+                justify-content: center;
+            }
+            .nav-item {
+                justify-content: center;
+                padding: 12px;
+            }
+            .chapter-list {
+                width: 180px;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide-in {
+            animation: slideIn 0.3s ease forwards;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-light);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--border);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">创</div>
+                <span class="app-title">创作大师</span>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">创作中心</div>
+                    <div class="nav-item active" data-section="writing">
+                        <span class="nav-icon">✍️</span>
+                        <span>正文写作</span>
+                    </div>
+                    <div class="nav-item" data-section="outline">
+                        <span class="nav-icon">📋</span>
+                        <span>大纲规划</span>
+                    </div>
+                    <div class="nav-item" data-section="setting">
+                        <span class="nav-icon">🌍</span>
+                        <span>世界观设定</span>
+                    </div>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">质量控制</div>
+                    <div class="nav-item" data-section="review">
+                        <span class="nav-icon">📖</span>
+                        <span>全书总览</span>
+                    </div>
+                    <div class="nav-item" data-section="quality">
+                        <span class="nav-icon">✨</span>
+                        <span>质检中心</span>
+                    </div>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">快捷入口</div>
+                    <div class="nav-item" data-section="bookshelf" onclick="openModal('bookshelf')">
+                        <span class="nav-icon">📚</span>
+                        <span>我的书架</span>
+                        <span class="nav-badge">3</span>
+                    </div>
+                    <div class="nav-item" onclick="openModal('changelog')">
+                        <span class="nav-icon">📜</span>
+                        <span>更新日志</span>
+                    </div>
+                    <div class="nav-item" onclick="openModal('settings')">
+                        <span class="nav-icon">⚙️</span>
+                        <span>设置</span>
+                    </div>
+                </div>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">作</div>
+                    <div class="user-details">
+                        <div class="user-name">创作者</div>
+                        <div class="user-status">在线</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="top-bar-left">
+                    <span class="book-title">《仙侠世界》</span>
+                    <div class="breadcrumb">
+                        <span>第一卷：入门</span>
+                        <span>/</span>
+                        <span>第三章：初入江湖</span>
+                    </div>
+                </div>
+                <div class="top-bar-right">
+                    <button class="top-btn" onclick="openModal('outline')">
+                        📋 大纲
+                    </button>
+                    <button class="top-btn" onclick="openModal('quality')">
+                        📊 质检
+                    </button>
+                    <button class="top-btn primary" onclick="generateContent()">
+                        ✨ AI续写
+                    </button>
+                </div>
+            </header>
+            
+            <div class="editor-area">
+                <div class="chapter-list">
+                    <div class="chapter-list-header">
+                        <span class="chapter-list-title">章节目录</span>
+                        <button class="chapter-list-add">+</button>
+                    </div>
+                    <div class="chapter-item">
+                        <div class="chapter-number">第一章</div>
+                        <div class="chapter-name">踏入仙门</div>
+                        <div class="chapter-wordcount">3,256 字</div>
+                    </div>
+                    <div class="chapter-item">
+                        <div class="chapter-number">第二章</div>
+                        <div class="chapter-name">修行之路</div>
+                        <div class="chapter-wordcount">4,128 字</div>
+                    </div>
+                    <div class="chapter-item active">
+                        <div class="chapter-number">第三章</div>
+                        <div class="chapter-name">初入江湖</div>
+                        <div class="chapter-wordcount">2,847 字</div>
+                    </div>
+                    <div class="chapter-item">
+                        <div class="chapter-number">第四章</div>
+                        <div class="chapter-name">江湖险恶</div>
+                        <div class="chapter-wordcount">1,523 字</div>
+                    </div>
+                    <div class="chapter-item">
+                        <div class="chapter-number">第五章</div>
+                        <div class="chapter-name">机缘巧合</div>
+                        <div class="chapter-wordcount">892 字</div>
+                    </div>
+                </div>
+                
+                <div class="writing-area">
+                    <div class="writing-header">
+                        <input type="text" class="writing-title-input" value="第三章：初入江湖" placeholder="请输入章节标题...">
+                        <div class="writing-actions">
+                            <button class="action-btn" title="保存">💾</button>
+                            <button class="action-btn" title="撤销">↩️</button>
+                            <button class="action-btn" title="重做">↪️</button>
+                            <button class="action-btn" title="字数统计">📊</button>
+                        </div>
+                    </div>
+                    <div class="writing-content">
+                        <textarea class="writing-textarea" placeholder="开始你的创作之旅...
+
+在这里书写你的故事，让灵感自由流淌。">
+
+天色渐明，晨曦的第一缕光芒穿透云层，洒落在青云峰的山巅之上。
+
+李云站在山门前，望着远处连绵起伏的山峦，心中充满了期待与忐忑。三年的修行，让他从一个懵懂少年蜕变为一名初窥门径的修士。然而他知道，这仅仅只是开始。
+
+“师兄，早啊！”身后传来清脆的声音。
+
+李云转身，看见师妹小月正端着一碗热气腾腾的粥走来。她的眉眼弯弯，笑起来像是春天的桃花。
+
+“多谢师妹。”李云接过粥碗，感受着掌心传来的温热。
+
+“你今日要下山历练，万事小心。”小月的声音轻柔，“师父说江湖险恶，人心难测。你虽是修士，但江湖中的阴谋诡计，也不得不防。”
+
+李云点点头，将粥一饮而尽。山下的小镇已经热闹起来，隐约可以听见集市的叫卖声。他深吸一口气，踏上了下山的石阶。
+
+“记住，”小月在身后喊道，“早日归来！”
+
+李云没有回头，只是挥了挥手。他知道，这次下山，不仅是对自己修行成果的检验，更是一场关乎本心的考验。
+
+山风吹过，带起他衣袂飘飘。
+
+                        </textarea>
+                    </div>
+                </div>
+                
+                <div class="ai-assistant-panel">
+                    <div class="ai-panel-header">
+                        <div class="ai-panel-title">
+                            <span>🤖</span>
+                            AI 创作助手
+                        </div>
+                    </div>
+                    <div class="ai-panel-content">
+                        <div class="ai-tool-grid">
+                            <button class="ai-tool-btn" onclick="aiAction('continue')">
+                                <div class="ai-tool-icon">✨</div>
+                                <div class="ai-tool-name">续写本章</div>
+                            </button>
+                            <button class="ai-tool-btn" onclick="aiAction('polish')">
+                                <div class="ai-tool-icon">🎨</div>
+                                <div class="ai-tool-name">润色优化</div>
+                            </button>
+                            <button class="ai-tool-btn" onclick="aiAction('expand')">
+                                <div class="ai-tool-icon">📝</div>
+                                <div class="ai-tool-name">扩展情节</div>
+                            </button>
+                            <button class="ai-tool-btn" onclick="aiAction('review')">
+                                <div class="ai-tool-icon">🔍</div>
+                                <div class="ai-tool-name">编审检查</div>
+                            </button>
+                        </div>
+                        
+                        <div class="ai-suggestions">
+                            <div class="suggestions-title">智能建议</div>
+                            <div class="suggestion-card">
+                                <div class="suggestion-label">情节建议</div>
+                                <div class="suggestion-text">主角下山后可安排一场遭遇战，增加故事张力...</div>
+                            </div>
+                            <div class="suggestion-card">
+                                <div class="suggestion-label">人物发展</div>
+                                <div class="suggestion-text">建议为小月增加更多戏份，她可能成为关键配角...</div>
+                            </div>
+                            <div class="suggestion-card">
+                                <div class="suggestion-label">文风优化</div>
+                                <div class="suggestion-text">此处描写可加入更多感官细节，增强沉浸感...</div>
+                            </div>
+                        </div>
+                        
+                        <div class="word-count-panel">
+                            <div class="word-count-header">
+                                <span class="word-count-title">本章字数</span>
+                                <span class="word-count-value">2,847</span>
+                            </div>
+                            <div class="word-count-bar">
+                                <div class="word-count-fill" style="width: 57%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+        <div class="modal" id="modalContent" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">标题</h2>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                内容
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const modalConfigs = {
+            changelog: {
+                title: '版本更新记录',
+                body: `
+                    <div class="changelog-list">
+                        <div class="changelog-item fade-in">
+                            <div class="changelog-version">v4.6.1</div>
+                            <div class="changelog-content">
+                                <div class="changelog-date">2026-06-02</div>
+                                <div class="changelog-updates">
+                                    <div class="changelog-update fix">修复：导入重建后的作品登录后可直接「上传云端」，首次点击会自动创建备份。</div>
+                                    <div class="changelog-update fix">修复：平板 / iPad 单章复制增加剪贴板降级，Safari 下成功率更高。</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="changelog-item fade-in" style="animation-delay: 0.1s">
+                            <div class="changelog-version">v4.6.0</div>
+                            <div class="changelog-content">
+                                <div class="changelog-date">2026-05-31</div>
+                                <div class="changelog-updates">
+                                    <div class="changelog-update new">新增：全托管连写——每章成稿后自动编审，不达标时可按质量闸自动正文优化或自动重生。</div>
+                                    <div class="changelog-update new">新增：设定中心「人物图谱」——核心人物列表与关系图谱。</div>
+                                    <div class="changelog-update opt">优化：全书总览与质检分为四个子页，并记住上次打开的子页。</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="changelog-item fade-in" style="animation-delay: 0.2s">
+                            <div class="changelog-version">v4.5.0</div>
+                            <div class="changelog-content">
+                                <div class="changelog-date">2026-05-31</div>
+                                <div class="changelog-updates">
+                                    <div class="changelog-update new">新增：书架「恢复历史版本」——云端书稿每日凌晨5点自动备份。</div>
+                                    <div class="changelog-update new">新增：正文顶栏「导出」支持纯文本TXT、Markdown、Word(.docx)、HTML四种格式。</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="changelog-item fade-in" style="animation-delay: 0.3s">
+                            <div class="changelog-version">v4.4.5</div>
+                            <div class="changelog-content">
+                                <div class="changelog-date">2026-05-29</div>
+                                <div class="changelog-updates">
+                                    <div class="changelog-update opt">优化：云端书稿保存与同步更快，章节多的作品等待更短。</div>
+                                    <div class="changelog-update fix">修复：版本冲突或从云端拉取覆盖后，本机会自动与云端对齐。</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="changelog-item fade-in" style="animation-delay: 0.4s">
+                            <div class="changelog-version">v4.4.4</div>
+                            <div class="changelog-content">
+                                <div class="changelog-date">2026-05-27</div>
+                                <div class="changelog-updates">
+                                    <div class="changelog-update fix">修复：桌面端正文阅读时，左侧章节目录会随正文一起滚走、看不见的问题。</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="changelog-item fade-in" style="animation-delay: 0.5s">
+                            <div class="changelog-version">v4.4.3</div>
+                            <div class="changelog-content">
+                                <div class="changelog-date">2026-05-27</div>
+                                <div class="changelog-updates">
+                                    <div class="changelog-update opt">优化：章末编审报告分区展示——总评与下一步建议、六维评分各成一块。</div>
+                                    <div class="changelog-update new">新增：编审报告「下一步」动作条，可快捷进入正文优化、重生本章或续写下一章。</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            bookshelf: {
+                title: '我的书架',
+                body: `
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">12.8</div>
+                            <div class="stat-label">总字数(万)</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">45</div>
+                            <div class="stat-label">章节数</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">作品数</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">87</div>
+                            <div class="stat-label">编审均分</div>
+                        </div>
+                    </div>
+                    <div class="bookshelf-grid">
+                        <div class="book-card slide-in" style="animation-delay: 0.1s">
+                            <div class="book-cover">仙</div>
+                            <div class="book-info">
+                                <div class="book-name">仙侠世界</div>
+                                <div class="book-meta">12.8万字 · 45章 · 连载中</div>
+                            </div>
+                        </div>
+                        <div class="book-card slide-in" style="animation-delay: 0.2s">
+                            <div class="book-cover">都市</div>
+                            <div class="book-info">
+                                <div class="book-name">都市修仙传</div>
+                                <div class="book-meta">8.3万字 · 32章 · 完结</div>
+                            </div>
+                        </div>
+                        <div class="book-card slide-in" style="animation-delay: 0.3s">
+                            <div class="book-cover">奇</div>
+                            <div class="book-info">
+                                <div class="book-name">奇幻大陆</div>
+                                <div class="book-meta">5.2万字 · 18章 · 草稿</div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            settings: {
+                title: '设置',
+                body: `
+                    <div class="settings-section">
+                        <div class="settings-title">创作模式</div>
+                        <div class="settings-row">
+                            <span class="settings-label">人机协作模式</span>
+                            <select style="padding: 8px 12px; background: var(--bg-light); border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary);">
+                                <option>AI+ (先AI后人工)</option>
+                                <option>+AI (先人工后AI)</option>
+                            </select>
+                        </div>
+                        <div class="settings-row">
+                            <span class="settings-label">正文生成方式</span>
+                            <select style="padding: 8px 12px; background: var(--bg-light); border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary);">
+                                <option>极速模式</option>
+                                <option>DeepSeek V4 Flash</option>
+                                <option>DeepSeek V4 Pro</option>
+                                <option>人工创作</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="settings-section">
+                        <div class="settings-title">界面设置</div>
+                        <div class="settings-row">
+                            <span class="settings-label">深色主题</span>
+                            <div class="toggle-switch active"></div>
+                        </div>
+                        <div class="settings-row">
+                            <span class="settings-label">显示字数统计</span>
+                            <div class="toggle-switch active"></div>
+                        </div>
+                        <div class="settings-row">
+                            <span class="settings-label">自动保存</span>
+                            <div class="toggle-switch active"></div>
+                        </div>
+                    </div>
+                    <div class="settings-section">
+                        <div class="settings-title">云端同步</div>
+                        <div class="settings-row">
+                            <span class="settings-label">自动同步</span>
+                            <div class="toggle-switch active"></div>
+                        </div>
+                        <div class="settings-row">
+                            <span class="settings-label">同步频率</span>
+                            <select style="padding: 8px 12px; background: var(--bg-light); border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary);">
+                                <option>实时同步</option>
+                                <option>每5分钟</option>
+                                <option>每15分钟</option>
+                                <option>手动同步</option>
+                            </select>
+                        </div>
+                    </div>
+                `
+            },
+            outline: {
+                title: '全书大纲',
+                body: `
+                    <div class="outline-panel">
+                        <div class="outline-section">
+                            <div class="outline-header">
+                                <div class="outline-title">
+                                    <span>📖</span>
+                                    第一卷：入门
+                                </div>
+                            </div>
+                            <div class="outline-content">
+                                <div class="outline-item">
+                                    <span class="outline-number">1</span>
+                                    <div class="outline-text">主角李云意外获得修仙传承，从此踏上修行之路</div>
+                                </div>
+                                <div class="outline-item">
+                                    <span class="outline-number">2</span>
+                                    <div class="outline-text">三年修行期满，下山历练，初入江湖</div>
+                                </div>
+                                <div class="outline-item">
+                                    <span class="outline-number">3</span>
+                                    <div class="outline-text">江湖险恶，遭遇第一次危机，险象环生</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="outline-section">
+                            <div class="outline-header">
+                                <div class="outline-title">
+                                    <span>📖</span>
+                                    第二卷：崛起
+                                </div>
+                            </div>
+                            <div class="outline-content">
+                                <div class="outline-item">
+                                    <span class="outline-number">1</span>
+                                    <div class="outline-text">获得机缘，实力大增，名声渐起</div>
+                                </div>
+                                <div class="outline-item">
+                                    <span class="outline-number">2</span>
+                                    <div class="outline-text">卷入宗门纷争，立场抉择</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            quality: {
+                title: '全书质检',
+                body: `
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">87</div>
+                            <div class="stat-label">编审均分</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">98%</div>
+                            <div class="stat-label">成稿进度</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">5</div>
+                            <div class="stat-label">待办问题</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">0</div>
+                            <div class="stat-label">严重问题</div>
+                        </div>
+                    </div>
+                    <div class="outline-section">
+                        <div class="outline-header">
+                            <div class="outline-title">
+                                <span>🔍</span>
+                                编审待办
+                            </div>
+                        </div>
+                        <div class="outline-content">
+                            <div class="outline-item">
+                                <span class="outline-number" style="background: var(--warning)">!</span>
+                                <div class="outline-text">第三章：部分语句存在重复，可进行润色优化</div>
+                            </div>
+                            <div class="outline-item">
+                                <span class="outline-number" style="background: var(--success)">✓</span>
+                                <div class="outline-text">第二章：编审通过，文笔流畅，情节紧凑</div>
+                            </div>
+                            <div class="outline-item">
+                                <span class="outline-number" style="background: var(--warning)">!</span>
+                                <div class="outline-text">第四章：章节字数偏低，建议补充内容</div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            }
+        };
+
+        function openModal(type) {
+            const config = modalConfigs[type];
+            if (!config) return;
+            
+            document.getElementById('modalTitle').textContent = config.title;
+            document.getElementById('modalBody').innerHTML = config.body;
+            document.getElementById('modalOverlay').classList.add('active');
+            
+            const toggleSwitches = document.querySelectorAll('.toggle-switch');
+            toggleSwitches.forEach(toggle => {
+                toggle.addEventListener('click', function() {
+                    this.classList.toggle('active');
+                });
+            });
+        }
+
+        function closeModal(event) {
+            if (event && event.target !== event.currentTarget) return;
+            document.getElementById('modalOverlay').classList.remove('active');
+        }
+
+        function aiAction(action) {
+            const actions = {
+                continue: '正在为您续写内容...',
+                polish: '正在优化文笔...',
+                expand: '正在扩展情节...',
+                review: '正在进行编审...'
+            };
+            alert(actions[action] || '功能开发中');
+        }
+
+        function generateContent() {
+            alert('✨ AI续写功能已触发，正在生成内容...');
+        }
+
+        document.querySelectorAll('.nav-item[data-section]').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.chapter-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.chapter-item').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        setTimeout(() => {
+            const textarea = document.querySelector('.writing-textarea');
+            textarea.focus();
+        }, 500);
+    </script>
+</body>
+</html>
